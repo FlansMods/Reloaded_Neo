@@ -2,12 +2,12 @@ package com.flansmod.common.types.elements;
 
 import com.flansmod.common.types.JsonField;
 import com.flansmod.common.types.crafting.EMaterialIconType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -36,12 +36,12 @@ public class MaterialSourceDefinition
 			List<TagKey<Item>> matchTagKeys = new ArrayList<>(matchTags.length);
 			// Check for items by name first
 			for(String name : matchItems)
-				matchItemLocs.add(new ResourceLocation(name));
+				matchItemLocs.add(ResourceLocation.parse(name));
 			for(String tag : matchTags)
-				matchTagKeys.add(TagKey.create(Registries.ITEM, new ResourceLocation(tag)));
+				matchTagKeys.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(tag)));
 
 
-			for(var kvp : ForgeRegistries.ITEMS.getEntries())
+			for(var kvp : BuiltInRegistries.ITEM.entrySet())
 			{
 				boolean isMatch = false;
 				if(matchItemLocs.contains(kvp.getKey().location()))

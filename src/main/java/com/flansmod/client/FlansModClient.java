@@ -35,29 +35,27 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.level.LevelEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = FlansMod.MODID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = FlansMod.MODID)
 public class FlansModClient
 {
 	public static final ClientInventoryManager INVENTORY_MANAGER = new ClientInventoryManager();
@@ -105,7 +103,7 @@ public class FlansModClient
 	@SubscribeEvent
 	public static void ClientInit(final FMLClientSetupEvent event)
 	{
-		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		IEventBus modEventBus = FML.bus;
 		ACTIONS_CLIENT.HookClient(modEventBus);
 		MODEL_REGISTRATION.Hook(modEventBus);
 		modEventBus.register(ANIMATIONS);
@@ -122,8 +120,8 @@ public class FlansModClient
 		// Entity Renderers
 		EntityRenderers.register(FlansMod.ENT_TYPE_BULLET.get(), BulletEntityRenderer::new);
 
-		MinecraftForge.EVENT_BUS.addListener(FlansModClient::RenderTick);
-		MinecraftForge.EVENT_BUS.addListener(FlansModClient::OnLevelLoad);
+		NeoForge.EVENT_BUS.addListener(FlansModClient::RenderTick);
+		NeoForge.EVENT_BUS.addListener(FlansModClient::OnLevelLoad);
 	}
 
 	public static void OnLevelLoad(LevelEvent.Load event)
@@ -190,7 +188,7 @@ public class FlansModClient
 		}
 	}
 
-	public static void RenderTick(TickEvent.RenderTickEvent event)
+	public static void RenderTick(RenderLevelStageEvent event)
 	{
 		PREV_FRAME_NS = THIS_FRAME_NS;
 		THIS_FRAME_NS = Util.getNanos();

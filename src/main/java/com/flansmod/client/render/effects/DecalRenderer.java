@@ -7,12 +7,11 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
@@ -31,10 +30,10 @@ public class DecalRenderer
 
 	public DecalRenderer()
 	{
-		textureManager = Minecraft.getInstance().textureManager;
+		textureManager = Minecraft.getInstance().getTextureManager();
 
-		MinecraftForge.EVENT_BUS.addListener(this::RenderTick);
-		MinecraftForge.EVENT_BUS.addListener(this::ClientTick);
+		NeoForge.EVENT_BUS.addListener(this::RenderTick);
+		NeoForge.EVENT_BUS.addListener(this::ClientTick);
 	}
 
 	public void AddDecal(@Nonnull ResourceLocation texture,
@@ -90,11 +89,10 @@ public class DecalRenderer
 		DecalsByTexture.get(texture).AddOrUpdateDecal(uuid, position, normal, colour, yaw, lifetime);
 	}
 
-	public void ClientTick(@Nonnull TickEvent.ClientTickEvent event)
+	public void ClientTick(@Nonnull ClientTickEvent.Pre event)
 	{
-		if(event.phase == TickEvent.Phase.START)
-			for(var list : DecalsByTexture.values())
-				list.ClientTick();
+		for(var list : DecalsByTexture.values())
+			list.ClientTick();
 	}
 
 	public void RenderTick(@Nonnull RenderLevelStageEvent event)
@@ -111,7 +109,7 @@ public class DecalRenderer
 						Tesselator.getInstance(),
 						event.getPoseStack(),
 						event.getCamera().getPosition(),
-						event.getPartialTick());
+						event.getPartialTick().getGameTimeDeltaTicks());
 				}
 			}
 		}

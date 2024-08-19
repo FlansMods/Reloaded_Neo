@@ -2,15 +2,9 @@ package com.flansmod.client;
 
 import com.flansmod.common.crafting.temporary.TemporaryWorkbench;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClientInventoryManager
 {

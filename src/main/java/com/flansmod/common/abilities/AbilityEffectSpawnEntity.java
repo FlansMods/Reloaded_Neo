@@ -5,11 +5,11 @@ import com.flansmod.common.actions.contexts.TargetsContext;
 import com.flansmod.common.actions.contexts.TriggerContext;
 import com.flansmod.common.types.Constants;
 import com.flansmod.common.types.abilities.elements.AbilityEffectDefinition;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ public class AbilityEffectSpawnEntity implements IAbilityEffect
 	public AbilityEffectSpawnEntity(@Nonnull AbilityEffectDefinition def)
 	{
 		String entityID = def.ModifyString(Constants.KEY_ENTITY_ID, "");
-		EntityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityID));
+		EntityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(entityID));
 	}
 
 	@Override

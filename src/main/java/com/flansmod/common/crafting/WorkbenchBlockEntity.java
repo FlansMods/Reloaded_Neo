@@ -1,59 +1,35 @@
 package com.flansmod.common.crafting;
 
 import com.flansmod.common.FlansMod;
-import com.flansmod.common.FlansModConfig;
-import com.flansmod.common.actions.Actions;
-import com.flansmod.common.actions.contexts.GunContext;
-import com.flansmod.common.crafting.ingredients.StackedIngredient;
-import com.flansmod.common.crafting.ingredients.TieredMaterialIngredient;
-import com.flansmod.common.crafting.menus.*;
 import com.flansmod.common.crafting.recipes.GunFabricationRecipe;
-import com.flansmod.common.crafting.recipes.PartFabricationRecipe;
-import com.flansmod.common.item.FlanItem;
-import com.flansmod.common.item.GunItem;
-import com.flansmod.common.types.crafting.EWorkbenchInventoryType;
 import com.flansmod.common.types.crafting.WorkbenchDefinition;
 import com.flansmod.common.types.crafting.elements.WorkbenchIOSettingDefinition;
 import com.flansmod.common.types.crafting.elements.WorkbenchSideDefinition;
-import com.flansmod.common.types.elements.MaterialSourceDefinition;
-import com.flansmod.common.types.elements.PaintableDefinition;
-import com.flansmod.common.types.elements.PaintjobDefinition;
-import com.flansmod.common.types.magazines.MagazineDefinition;
 import com.flansmod.util.Maths;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -78,7 +54,7 @@ public class WorkbenchBlockEntity extends BlockEntity implements WorldlyContaine
 
 	public WorkbenchBlockEntity(ResourceLocation defLoc, BlockPos pos, BlockState state)
 	{
-		super(ForgeRegistries.BLOCK_ENTITY_TYPES.getValue(defLoc), pos, state);
+		super(BuiltInRegistries.BLOCK_ENTITY_TYPE.get(defLoc), pos, state);
 		Def = FlansMod.WORKBENCHES.Get(defLoc);
 		Workbench = new AbstractWorkbench(Def, (player) -> {
 			if(isRemoved() || getLevel().getBlockEntity(getBlockPos()) != this)

@@ -1,14 +1,13 @@
 package com.flansmod.client;
 
 import com.flansmod.util.Maths;
-import com.flansmod.util.MinecraftHelpers;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 
@@ -27,7 +26,7 @@ public class RecoilManager
 
 	public RecoilManager()
 	{
-		MinecraftForge.EVENT_BUS.register(this);
+		NeoForge.EVENT_BUS.register(this);
 	}
 
 	public void AddRecoil(float magYaw, float magPitch)
@@ -43,39 +42,36 @@ public class RecoilManager
 	@SubscribeEvent
 	public void OnCameraEvent(@Nonnull ViewportEvent.ComputeCameraAngles event)
 	{
-		event.setYaw(event.getYaw() + GetRecoilYaw(Minecraft.getInstance().getPartialTick()));
-		event.setPitch(event.getPitch() - GetRecoilPitch(Minecraft.getInstance().getPartialTick()));
+		event.setYaw(event.getYaw() + GetRecoilYaw(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks()));
+		event.setPitch(event.getPitch() - GetRecoilPitch(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks()));
 	}
 
 	@SubscribeEvent
-	public void OnRenderTick(@Nonnull TickEvent.RenderTickEvent event)
+	public void OnRenderTick(@Nonnull RenderLevelStageEvent event)
 	{
 
 	}
 
 	@SubscribeEvent
-	public void OnClientTick(@Nonnull TickEvent.ClientTickEvent event)
+	public void OnClientTick(@Nonnull ClientTickEvent.Post event)
 	{
-		if(event.phase == TickEvent.Phase.END)
-		{
-			RecoilStacksYawLast = RecoilStacksYaw;
-			RecoilStacksPitchLast = RecoilStacksPitch;
+		RecoilStacksYawLast = RecoilStacksYaw;
+		RecoilStacksPitchLast = RecoilStacksPitch;
 
-			float dYaw = RecoilPendingYaw * 0.5f;
-			float dPitch = RecoilPendingPitch * 0.5f;
-			//Player player = Minecraft.getInstance().player;
-			//if (player != null)
-			//{
-			//	player.setXRot(player.getXRot() - dPitch);
-			//	player.setYRot(player.getYRot() - dYaw);
-			//}
-			RecoilStacksYaw += dYaw;
-			RecoilStacksPitch += dPitch;
-			RecoilStacksYaw *= 0.75f;
-			RecoilStacksPitch *= 0.75f;
+		float dYaw = RecoilPendingYaw * 0.5f;
+		float dPitch = RecoilPendingPitch * 0.5f;
+		//Player player = Minecraft.getInstance().player;
+		//if (player != null)
+		//{
+		//	player.setXRot(player.getXRot() - dPitch);
+		//	player.setYRot(player.getYRot() - dYaw);
+		//}
+		RecoilStacksYaw += dYaw;
+		RecoilStacksPitch += dPitch;
+		RecoilStacksYaw *= 0.75f;
+		RecoilStacksPitch *= 0.75f;
 
-			RecoilPendingYaw -= dYaw;
-			RecoilPendingPitch -= dPitch;
-		}
+		RecoilPendingYaw -= dYaw;
+		RecoilPendingPitch -= dPitch;
 	}
 }

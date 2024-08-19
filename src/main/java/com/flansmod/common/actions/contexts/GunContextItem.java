@@ -53,7 +53,7 @@ public class GunContextItem extends GunContext
 			Stack.getCount(),
 			Item.getId(Stack.getItem()),
 			Stack.getDamageValue(),
-			Stack.getTag());
+			Stack.getTags());
 	}
 	@Override
 	public boolean equals(Object other)
@@ -61,7 +61,7 @@ public class GunContextItem extends GunContext
 		if(other == this) return true;
 		if(other instanceof GunContextItem otherContext)
 		{
-			return ItemStack.isSameItemSameTags(Stack, otherContext.Stack);
+			return ItemStack.isSameItemSameComponents(Stack, otherContext.Stack);
 		}
 		return false;
 	}

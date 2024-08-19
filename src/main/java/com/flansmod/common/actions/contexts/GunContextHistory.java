@@ -6,11 +6,11 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class GunContextHistory extends ContextHistory<GunContext>
 {
@@ -18,8 +18,8 @@ public class GunContextHistory extends ContextHistory<GunContext>
 		@Override
 		@Nonnull
 		public GunContext GetOrCreate(@Nonnull Function<GunContext, Boolean> validatorFunc,
-									  @Nonnull NonNullSupplier<GunContext> creatorFunc,
-									  @Nonnull NonNullSupplier<Long> timeFunc)
+									  @Nonnull Supplier<GunContext> creatorFunc,
+									  @Nonnull Supplier<Long> timeFunc)
 		{
 			return GunContext.INVALID;
 		}

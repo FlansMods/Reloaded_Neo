@@ -3,13 +3,12 @@ package com.flansmod.client.input;
 import com.flansmod.common.actions.contexts.ShooterContext;
 import com.flansmod.common.entity.vehicle.VehicleEntity;
 import com.mojang.blaze3d.platform.InputConstants;
+import cpw.mods.util.Lazy;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.settings.IKeyConflictContext;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.common.util.Lazy;
+import net.neoforged.neoforge.client.settings.IKeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
 
 import javax.annotation.Nonnull;
 

@@ -8,7 +8,6 @@ import com.flansmod.common.entity.longdistance.LongDistanceVehicle;
 import com.flansmod.common.entity.vehicle.physics.*;
 import com.flansmod.common.entity.vehicle.VehicleEntity;
 import com.flansmod.common.entity.vehicle.hierarchy.VehicleComponentPath;
-import com.flansmod.util.Maths;
 import com.flansmod.util.Transform;
 import com.flansmod.util.collision.*;
 import com.flansmod.util.physics.IForce;
@@ -20,9 +19,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -85,14 +84,11 @@ public class VehicleDebugRenderer
 
 	public VehicleDebugRenderer()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::ClientTick);
+		NeoForge.EVENT_BUS.addListener(this::ClientTick);
 	}
 
-	public void ClientTick(@Nonnull TickEvent.ClientTickEvent event)
+	public void ClientTick(@Nonnull ClientTickEvent.Post event)
 	{
-		if(event.phase != TickEvent.Phase.END)
-			return;
-
 		if (FlansMod.DEBUG || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes())
 		{
 			ClientLevel level = Minecraft.getInstance().level;

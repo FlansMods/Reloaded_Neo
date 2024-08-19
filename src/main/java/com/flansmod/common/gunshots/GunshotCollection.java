@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class GunshotCollection
 {
-	public static final ResourceKey<Level> InvalidDimensionKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("null"));
+	public static final ResourceKey<Level> InvalidDimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(FlansMod.MODID, "null"));
 
 	// Raw data is reference-free for networking
 	public ResourceKey<Level> OwnerDimension;

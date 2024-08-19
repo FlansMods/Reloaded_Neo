@@ -6,13 +6,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ShooterContextHistory extends ContextHistory<ShooterContext>
 {
@@ -20,8 +20,8 @@ public class ShooterContextHistory extends ContextHistory<ShooterContext>
 		@Override
 		@Nonnull
 		public ShooterContext GetOrCreate(@Nonnull Function<ShooterContext, Boolean> validatorFunc,
-										  @Nonnull NonNullSupplier<ShooterContext> creatorFunc,
-										  @Nonnull NonNullSupplier<Long> timeFunc)
+										  @Nonnull Supplier<ShooterContext> creatorFunc,
+										  @Nonnull Supplier<Long> timeFunc)
 		{
 			return ShooterContext.INVALID;
 		}

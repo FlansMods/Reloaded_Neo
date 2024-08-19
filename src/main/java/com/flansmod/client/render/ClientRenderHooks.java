@@ -35,10 +35,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.RenderHandEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -51,16 +53,13 @@ public class ClientRenderHooks
 	{
 		MC = Minecraft.getInstance();
 		RNG = new LegacyRandomSource(0x19393939292L);
-		MinecraftForge.EVENT_BUS.register(this);
+		NeoForge.EVENT_BUS.register(this);
 	}
 
 	@SubscribeEvent
-	public void OnClientTick(TickEvent.ClientTickEvent event)
+	public void OnClientTick(ClientTickEvent.Post event)
 	{
-		if(event.phase == TickEvent.Phase.END)
-		{
-			UpdateHitMarkers();
-		}
+		UpdateHitMarkers();
 	}
 
 	@SubscribeEvent
@@ -105,7 +104,7 @@ public class ClientRenderHooks
 	}
 
 	@SubscribeEvent
-	public void OnRenderOverlay(RenderGuiOverlayEvent event)
+	public void OnRenderOverlay(RenderGuiLayerEvent.Pre event)
 	{
 		GuiGraphics graphics = event.getGuiGraphics();
 		Player player = MinecraftHelpers.GetClient().player;
@@ -116,48 +115,45 @@ public class ClientRenderHooks
 		GunContext[] gunContexts = shooterContext.GetAllGunContexts(true);
 		GunContext mainContext = gunContexts[0];
 		GunContext offContext = gunContexts[1];
-		if (event instanceof RenderGuiOverlayEvent.Pre)
+		switch (event.getName().getPath())
 		{
-			switch (event.getOverlay().id().getPath())
+			case "helmet":
 			{
-				case "helmet":
-				{
 
-					break;
+				break;
+			}
+			case "crosshair":
+			{
+				RenderHitMarkerOverlay();
+				if (RenderScopeOverlay(mainContext, offContext))
+				{
+					event.setCanceled(true);
 				}
-				case "crosshair":
+				for(GunContext gunContext : gunContexts)
 				{
-					RenderHitMarkerOverlay();
-					if (RenderScopeOverlay(mainContext, offContext))
-					{
-						event.setCanceled(true);
-					}
-					for(GunContext gunContext : gunContexts)
-					{
-						if(!gunContext.IsValid())
-							continue;
+					if(!gunContext.IsValid())
+						continue;
 
-						for(ActionGroupInstance actionGroup : gunContext.GetActionStack().GetActiveActionGroups())
+					for(ActionGroupInstance actionGroup : gunContext.GetActionStack().GetActiveActionGroups())
+					{
+						for (ActionInstance action : actionGroup.GetActions())
 						{
-							for (ActionInstance action : actionGroup.GetActions())
+							if (action instanceof AimDownSightAction adsAction)
 							{
-								if (action instanceof AimDownSightAction adsAction)
-								{
-									event.setCanceled(true);
-								}
+								event.setCanceled(true);
 							}
 						}
 					}
-					break;
 				}
-				case "hotbar":
-				{
-					RenderPlayerAmmoOverlay(event.getGuiGraphics());
-					RenderKillMessageOverlay();
-					RenderTeamInfoOverlay();
+				break;
+			}
+			case "hotbar":
+			{
+				RenderPlayerAmmoOverlay(event.getGuiGraphics());
+				RenderKillMessageOverlay();
+				RenderTeamInfoOverlay();
 
-					break;
-				}
+				break;
 			}
 		}
 	}
@@ -207,7 +203,7 @@ public class ClientRenderHooks
 		return false;
 	}
 
-	private static final ResourceLocation HIT_MARKER_TEXTURE = new ResourceLocation(FlansMod.MODID, "textures/gui/hitmarker.png");
+	private static final ResourceLocation HIT_MARKER_TEXTURE = ResourceLocation.fromNamespaceAndPath(FlansMod.MODID, "textures/gui/hitmarker.png");
 	private static final float HIT_MARKER_SIZE = 9f;
 	private static float HitMarkerDurationRemaining = 0.0f;
 	private static boolean isFatal = false;

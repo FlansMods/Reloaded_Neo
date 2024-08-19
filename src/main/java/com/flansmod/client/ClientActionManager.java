@@ -12,11 +12,12 @@ import com.flansmod.util.Maths;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ClientActionManager extends ActionManager
 
 	public void HookClient(IEventBus modEventBus)
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::ClientTick);
+		NeoForge.EVENT_BUS.addListener(this::ClientTick);
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -181,48 +182,45 @@ public class ClientActionManager extends ActionManager
 
 	}
 
-	public void ClientTick(TickEvent.ClientTickEvent tickEvent)
+	public void ClientTick(ClientTickEvent.Pre tickEvent)
 	{
-		if(tickEvent.phase == TickEvent.Phase.START)
+		List<UUID> invalidIDs = new ArrayList<>();
+		for(var kvp : ActionStacks.entrySet())
 		{
-			List<UUID> invalidIDs = new ArrayList<>();
-			for(var kvp : ActionStacks.entrySet())
+			UUID gunID = kvp.getKey();
+			ActionStack actionStack = kvp.getValue();
+			GunContext gunContext = GunContext.of(gunID);
+			if(gunContext.IsValid())
 			{
-				UUID gunID = kvp.getKey();
-				ActionStack actionStack = kvp.getValue();
-				GunContext gunContext = GunContext.of(gunID);
-				if(gunContext.IsValid())
-				{
-					if (actionStack.IsValid())
-						actionStack.OnTick(Minecraft.getInstance().level, gunContext);
-				}
-				else
-				{
-					actionStack.Clear(gunContext);
-					invalidIDs.add(gunID);
-				}
+				if (actionStack.IsValid())
+					actionStack.OnTick(Minecraft.getInstance().level, gunContext);
 			}
-
-			for(UUID invalidID : invalidIDs)
-				ActionStacks.remove(invalidID);
-
-			Player player = Minecraft.getInstance().player;
-			if(player != null)
+			else
 			{
-				ShooterContext shooterContext = ShooterContext.of(player);
-				for (int i = 0; i < player.getInventory().getContainerSize(); i++)
+				actionStack.Clear(gunContext);
+				invalidIDs.add(gunID);
+			}
+		}
+
+		for(UUID invalidID : invalidIDs)
+			ActionStacks.remove(invalidID);
+
+		Player player = Minecraft.getInstance().player;
+		if(player != null)
+		{
+			ShooterContext shooterContext = ShooterContext.of(player);
+			for (int i = 0; i < player.getInventory().getContainerSize(); i++)
+			{
+				if (player.getInventory().getItem(i).getItem() instanceof GunItem)
 				{
-					if (player.getInventory().getItem(i).getItem() instanceof GunItem)
+					UUID gunID = FlanItem.GetGunID(player.getInventory().getItem(i));
+					if(gunID != FlanItem.InvalidGunUUID)
 					{
-						UUID gunID = FlanItem.GetGunID(player.getInventory().getItem(i));
-						if(gunID != FlanItem.InvalidGunUUID)
-						{
-							GunContext gunContext = GunContext.of(shooterContext, gunID);
-							ActionStack actionStack = GetActionStack(gunID);
-							boolean equipped = (i == player.getInventory().selected)
-								|| (i == Inventory.SLOT_OFFHAND);
-							actionStack.UpdateEquipped(gunContext, equipped);
-						}
+						GunContext gunContext = GunContext.of(shooterContext, gunID);
+						ActionStack actionStack = GetActionStack(gunID);
+						boolean equipped = (i == player.getInventory().selected)
+							|| (i == Inventory.SLOT_OFFHAND);
+						actionStack.UpdateEquipped(gunContext, equipped);
 					}
 				}
 			}

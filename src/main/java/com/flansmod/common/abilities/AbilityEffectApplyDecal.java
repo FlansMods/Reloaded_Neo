@@ -25,7 +25,7 @@ public class AbilityEffectApplyDecal implements IAbilityEffect
 
 	public AbilityEffectApplyDecal(@Nonnull AbilityEffectDefinition def)
 	{
-		DecalTexture = new ResourceLocation(def.ModifyString(Constants.DECAL_TEXTURE, "")).withPrefix("textures/").withSuffix(".png");
+		DecalTexture = ResourceLocation.parse(def.ModifyString(Constants.DECAL_TEXTURE, "")).withPrefix("textures/").withSuffix(".png");
 		DecalDuration = new StatHolder(Constants.DECAL_DURATION, def);
 		RandomizeRotation = def.ModifyBoolean(Constants.DECAL_RANDOMIZE_ROTATION, true);
 

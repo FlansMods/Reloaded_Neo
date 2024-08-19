@@ -38,11 +38,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,7 +61,7 @@ public class AbstractWorkbench implements Container, Clearable, MenuProvider
 	public final RestrictedContainer MaterialContainer;
 	public final RestrictedContainer BatteryContainer;
 	public final RestrictedContainer FuelContainer;
-	private EnergyStorage EnergyStorage;
+	private net.neoforged.neoforge.energy.EnergyStorage EnergyStorage;
 	public LazyOptional<IEnergyStorage> GetLazyOptionalEnergy()
 	{
 		return LazyOptional.of(() -> {
@@ -157,11 +155,11 @@ public class AbstractWorkbench implements Container, Clearable, MenuProvider
 			EnergyStorage = new EnergyStorage(Def.energy.maxFE, Def.energy.acceptFEPerTick, Def.energy.disperseFEPerTick);
 			BatteryContainer = new RestrictedContainer(
 				Def.energy.numBatterySlots, Def.energy.batterySlotStackSize,
-				(stack) -> stack.getCapability(ForgeCapabilities.ENERGY).isPresent(),
+				(stack) -> stack.getCapability(NeoForgeCapabilities.ENERGY).isPresent(),
 				stillValidFunc);
 			FuelContainer = new RestrictedContainer(
 				Def.energy.numSolidFuelSlots, 64,
-				(stack) -> ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0.0f,
+				(stack) -> CommonHooks.getBurnTime(stack, RecipeType.SMELTING) > 0.0f,
 				stillValidFunc);
 		}
 		else

@@ -6,6 +6,7 @@ import com.flansmod.common.actions.contexts.TriggerContext;
 import com.flansmod.common.actions.contexts.TargetsContext;
 import com.flansmod.common.types.Constants;
 import com.flansmod.common.types.abilities.elements.AbilityEffectDefinition;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -27,7 +28,7 @@ public class AbilityEffectApplyAttribute implements IAbilityEffect
 
 	public AbilityEffectApplyAttribute(@Nonnull AbilityEffectDefinition def)
 	{
-		Attrib = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(def.ModifyString(Constants.STAT_ATTRIBUTE_ID, "")));
+		Attrib = BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.tryParse(def.ModifyString(Constants.STAT_ATTRIBUTE_ID, "")));
 		IdentifyingKey = UUID.randomUUID();
 
 		AttributeMultiplier = new StatHolder(Constants.STAT_ATTRIBUTE_MULTIPLIER, def);

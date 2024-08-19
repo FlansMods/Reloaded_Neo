@@ -1,16 +1,14 @@
 package com.flansmod.common.types.elements;
 
-import com.flansmod.common.types.JsonDefinition;
 import com.flansmod.common.types.JsonField;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import static com.flansmod.common.types.JsonDefinition.InvalidLocation;
 

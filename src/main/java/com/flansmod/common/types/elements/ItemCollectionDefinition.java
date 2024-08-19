@@ -2,14 +2,12 @@ package com.flansmod.common.types.elements;
 
 import com.flansmod.common.item.FlanItem;
 import com.flansmod.common.item.PartItem;
-import com.flansmod.common.types.Definitions;
 import com.flansmod.common.types.JsonDefinition;
 import com.flansmod.common.types.JsonField;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
-import javax.json.Json;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class ItemCollectionDefinition
 		if(CachedMatches == null)
 		{
 			CachedMatches = new ArrayList<>();
-			ForgeRegistries.ITEMS.forEach((item) -> {
+			BuiltInRegistries.ITEM.forEach((item) -> {
 
 				// ---------------------------------------------
 				// Process inclusions first

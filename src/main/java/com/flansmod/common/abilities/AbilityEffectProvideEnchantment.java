@@ -6,6 +6,7 @@ import com.flansmod.common.actions.contexts.TriggerContext;
 import com.flansmod.common.types.Constants;
 import com.flansmod.common.types.abilities.elements.AbilityEffectDefinition;
 import com.flansmod.util.Maths;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -21,7 +22,7 @@ public class AbilityEffectProvideEnchantment implements IAbilityEffect
 
 	public AbilityEffectProvideEnchantment(@Nonnull AbilityEffectDefinition def)
 	{
-		Enchant = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(def.ModifyString(Constants.STAT_ENCHANTMENT_ID, "")));
+		Enchant = BuiltInRegistries.ENC.getValue(new ResourceLocation(def.ModifyString(Constants.STAT_ENCHANTMENT_ID, "")));
 
 		EnchantLevel = new StatHolder(Constants.STAT_ENCHANTMENT_LEVEL, def);
 	}

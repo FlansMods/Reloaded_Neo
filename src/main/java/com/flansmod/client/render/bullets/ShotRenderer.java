@@ -18,17 +18,14 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
@@ -38,12 +35,12 @@ import java.util.ArrayList;
 public class ShotRenderer
 {
 	private ArrayList<ShotRenderInstance> shots = new ArrayList<>(128);
-	private static TextureManager textureManager() { return Minecraft.getInstance().textureManager; }
+	private static TextureManager textureManager() { return Minecraft.getInstance().getTextureManager(); }
 
 	public ShotRenderer()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::RenderTick);
-		MinecraftForge.EVENT_BUS.addListener(this::ClientTick);
+		NeoForge.EVENT_BUS.addListener(this::RenderTick);
+		NeoForge.EVENT_BUS.addListener(this::ClientTick);
 	}
 
 	public int AddLocalPlayerTrail(Vec3 origin, Vec3 endpoint, GunshotContext gunshotContext)
@@ -64,7 +61,7 @@ public class ShotRenderer
 	@Nullable
 	private BulletItemRenderer GetBulletRenderer(GunshotContext gunshotContext)
 	{
-		Item item = ForgeRegistries.ITEMS.getValue(gunshotContext.Bullet.Location);
+		Item item = BuiltInRegistries.ITEM.get(gunshotContext.Bullet.Location);
 		if(item instanceof FlanItem flanItem)
 		{
 			ITurboRenderer itemRenderer = FlansModelRegistry.GetItemRenderer(flanItem);
@@ -90,7 +87,7 @@ public class ShotRenderer
 		return shot.GetLifetime();
 	}
 
-	public void ClientTick(TickEvent.ClientTickEvent event)
+	public void ClientTick(ClientTickEvent.Pre event)
 	{
 		for(int i = shots.size() - 1; i >= 0; i--)
 		{
@@ -114,7 +111,7 @@ public class ShotRenderer
 
 			for(ShotRenderInstance shot : shots)
 			{
-				shot.Render(tesselator, poseStack, pos, event.getPartialTick());
+				shot.Render(tesselator, poseStack, pos, event.getPartialTick().getGameTimeDeltaTicks());
 			}
 
 			//for(ShotRenderInstance shot : shots)
@@ -197,32 +194,26 @@ public class ShotRenderer
 			poseStack.pushPose();
 			poseStack.translate(centerPos.x - cameraPos.x, centerPos.y - cameraPos.y, centerPos.z - cameraPos.z);
 
-			BufferBuilder buf = tesselator.getBuilder();
-			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+			BufferBuilder buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
 			Vec3 v0 = trailYAxis.add(trailXAxis);
 			Vec3 v1 = trailYAxis.subtract(trailXAxis);
 			Vec3 v2 = trailYAxis.scale(-1d).subtract(trailXAxis);
 			Vec3 v3 = trailYAxis.scale(-1d).add(trailXAxis);
 
-			buf.vertex(poseStack.last().pose(), (float)v0.x, (float)v0.y, (float)v0.z)
-				.color(colour.x, colour.y, colour.z, colour.w)
-				//.normal((float)trailNormal.x, (float)trailNormal.y, (float)trailNormal.z)
-				.endVertex();
-			buf.vertex(poseStack.last().pose(), (float)v1.x, (float)v1.y, (float)v1.z)
-				.color(colour.x, colour.y, colour.z, colour.w)
-				//.normal((float)trailNormal.x, (float)trailNormal.y, (float)trailNormal.z)
-				.endVertex();
-			buf.vertex(poseStack.last().pose(), (float)v2.x, (float)v2.y, (float)v2.z)
-				.color(colour.x, colour.y, colour.z, colour.w)
-				//.normal((float)trailNormal.x, (float)trailNormal.y, (float)trailNormal.z)
-				.endVertex();
-			buf.vertex(poseStack.last().pose(), (float)v3.x, (float)v3.y, (float)v3.z)
-				.color(colour.x, colour.y, colour.z, colour.w)
-				//.normal((float)trailNormal.x, (float)trailNormal.y, (float)trailNormal.z)
-				.endVertex();
+			buf.addVertex(poseStack.last().pose(), (float)v0.x, (float)v0.y, (float)v0.z)
+				.setColor(colour.x, colour.y, colour.z, colour.w);
 
-			tesselator.end();
+			buf.addVertex(poseStack.last().pose(), (float)v1.x, (float)v1.y, (float)v1.z)
+				.setColor(colour.x, colour.y, colour.z, colour.w);
+
+			buf.addVertex(poseStack.last().pose(), (float)v2.x, (float)v2.y, (float)v2.z)
+				.setColor(colour.x, colour.y, colour.z, colour.w);
+
+			buf.addVertex(poseStack.last().pose(), (float)v3.x, (float)v3.y, (float)v3.z)
+				.setColor(colour.x, colour.y, colour.z, colour.w);
+
+			buf.build();
 
 			poseStack.popPose();
 

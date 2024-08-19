@@ -1,48 +1,49 @@
 package com.flansmod.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import javax.annotation.Nonnull;
 
 public class FlansModConfig
 {
-	public static final ForgeConfigSpec GeneralConfig;
+	public static final IConfigSpec GeneralConfig;
 
-	public static ForgeConfigSpec.BooleanValue AllowBulletsBreakBlocks;
-	public static ForgeConfigSpec.BooleanValue AllowBulletsCreateExplosions;
-	public static ForgeConfigSpec.BooleanValue AllowBulletsCreateFire;
+	public static ModConfigSpec.BooleanValue AllowBulletsBreakBlocks;
+	public static ModConfigSpec.BooleanValue AllowBulletsCreateExplosions;
+	public static ModConfigSpec.BooleanValue AllowBulletsCreateFire;
 
-	public static ForgeConfigSpec.BooleanValue AllowSummonNpc;
-	public static ForgeConfigSpec.DoubleValue SummonNpcMinDistance;
-	public static ForgeConfigSpec.DoubleValue SummonNpcExtraCooldown;
+	public static ModConfigSpec.BooleanValue AllowSummonNpc;
+	public static ModConfigSpec.DoubleValue SummonNpcMinDistance;
+	public static ModConfigSpec.DoubleValue SummonNpcExtraCooldown;
 
-	public static ForgeConfigSpec.BooleanValue AllowPainting;
-	public static ForgeConfigSpec.IntValue AdditionalPaintCanCost;
-	public static ForgeConfigSpec.BooleanValue AllowMagazineModifying;
-	public static ForgeConfigSpec.IntValue AdditionalMagazineModifyCost;
-	public static ForgeConfigSpec.BooleanValue AllowGunCrafting;
-	public static ForgeConfigSpec.BooleanValue AllowPartCrafting;
+	public static ModConfigSpec.BooleanValue AllowPainting;
+	public static ModConfigSpec.IntValue AdditionalPaintCanCost;
+	public static ModConfigSpec.BooleanValue AllowMagazineModifying;
+	public static ModConfigSpec.IntValue AdditionalMagazineModifyCost;
+	public static ModConfigSpec.BooleanValue AllowGunCrafting;
+	public static ModConfigSpec.BooleanValue AllowPartCrafting;
 
 
-	public static ForgeConfigSpec.BooleanValue AllowShootActions;
-	public static ForgeConfigSpec.BooleanValue AllowRaycastActions;
-	public static ForgeConfigSpec.BooleanValue AllowLaserActions;
+	public static ModConfigSpec.BooleanValue AllowShootActions;
+	public static ModConfigSpec.BooleanValue AllowRaycastActions;
+	public static ModConfigSpec.BooleanValue AllowLaserActions;
 
-	public static ForgeConfigSpec.DoubleValue GlobalDamageMultiplier;
-	public static ForgeConfigSpec.DoubleValue GlobalHealMultiplier;
-	public static ForgeConfigSpec.DoubleValue GlobalFireDurationMultiplier;
-	public static ForgeConfigSpec.DoubleValue GlobalRepairMultiplier;
-	public static ForgeConfigSpec.DoubleValue GlobalHeadshotMultiplier;
+	public static ModConfigSpec.DoubleValue GlobalDamageMultiplier;
+	public static ModConfigSpec.DoubleValue GlobalHealMultiplier;
+	public static ModConfigSpec.DoubleValue GlobalFireDurationMultiplier;
+	public static ModConfigSpec.DoubleValue GlobalRepairMultiplier;
+	public static ModConfigSpec.DoubleValue GlobalHeadshotMultiplier;
 
 
 	static
 	{
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		Init(builder);
 		GeneralConfig = builder.build();
 	}
 
-	private static void Init(@Nonnull ForgeConfigSpec.Builder builder)
+	private static void Init(@Nonnull ModConfigSpec.Builder builder)
 	{
 		builder.push("World Settings");
 		AllowBulletsBreakBlocks = builder.define("allow_bullet_break_blocks", true);

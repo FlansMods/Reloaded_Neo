@@ -1,7 +1,6 @@
 package com.flansmod.common.actions.contexts;
 
 import com.flansmod.common.FlansMod;
-import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +39,7 @@ public abstract class ContextHistory<T>
 	//  2. Your critera were not matched, but your creatorFunc made a valid context, that has been stored and returned
 	//  3. Sorry, but your new context was not valid, so we don't store it and return an invalid context
 	@Nonnull
-	public T GetOrCreate(@Nonnull Function<T, Boolean> validatorFunc, @Nonnull NonNullSupplier<T> creatorFunc, @Nonnull NonNullSupplier<Long> timeFunc)
+	public T GetOrCreate(@Nonnull Function<T, Boolean> validatorFunc, @Nonnull Supplier<T> creatorFunc, @Nonnull Supplier<Long> timeFunc)
 	{
 		//T match = GetMostRecentValidContext(validatorFunc);
 		// If our most recent context is not valid, we should push another context onto the stack

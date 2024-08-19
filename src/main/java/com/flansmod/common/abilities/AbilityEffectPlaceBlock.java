@@ -7,12 +7,12 @@ import com.flansmod.common.actions.contexts.TriggerContext;
 import com.flansmod.common.types.Constants;
 import com.flansmod.common.types.abilities.elements.AbilityEffectDefinition;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public class AbilityEffectPlaceBlock implements IAbilityEffect
 		String blockID = def.ModifyString(Constants.STAT_BLOCK_ID, "");
 		if(!blockID.isEmpty())
 		{
-			Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockID));
+			Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(blockID));
 			if(block != null)
 			{
 				BlockToPlace = block.defaultBlockState();

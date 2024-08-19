@@ -46,6 +46,7 @@ import com.flansmod.util.collision.OBBCollisionSystem;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -60,9 +61,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -72,35 +73,35 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 @Mod(FlansMod.MODID)
@@ -111,26 +112,26 @@ public class FlansMod
     public static boolean DEBUG = false;
 
     // Registers
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
-    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MODID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
+    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, MODID);
 
     // Core mod blocks & items
-    public static final RegistryObject<EntityType<BulletEntity>> ENT_TYPE_BULLET = ENTITY_TYPES.register(
+    public static final Supplier<EntityType<BulletEntity>> ENT_TYPE_BULLET = ENTITY_TYPES.register(
         "bullet",
         () -> EntityType.Builder.of(
             BulletEntity::new,
             MobCategory.MISC)
             .sized(0.5f, 0.5f)
             .build("bullet"));
-    public static final RegistryObject<EntityType<WheelEntity>> ENT_TYPE_WHEEL = ENTITY_TYPES.register(
+    public static final Supplier<EntityType<WheelEntity>> ENT_TYPE_WHEEL = ENTITY_TYPES.register(
         "wheel",
         () -> EntityType.Builder.of(
             WheelEntity::new,
@@ -148,56 +149,56 @@ public class FlansMod
     //        .sized(0.5f, 0.5f)
     //        .build("wheel"));
 
-    public static final RegistryObject<Item> RAINBOW_PAINT_CAN_ITEM = ITEMS.register("rainbow_paint_can", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> MAG_UPGRADE_ITEM = ITEMS.register("magazine_upgrade", () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> RAINBOW_PAINT_CAN_ITEM = ITEMS.register("rainbow_paint_can", () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> MAG_UPGRADE_ITEM = ITEMS.register("magazine_upgrade", () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<Block> GUN_MOD_TABLE_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "gun_modification_table");
-    public static final RegistryObject<Block> DIESEL_GENERATOR_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "portable_diesel_generator");
-    public static final RegistryObject<Block> COAL_GENERATOR_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "portable_coal_generator");
-    public static final RegistryObject<Item> GUN_MOD_TABLE_ITEM = ITEMS.register("gun_modification_table", () -> new BlockItem(GUN_MOD_TABLE_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> DIESEL_GENERATOR_ITEM = ITEMS.register("portable_diesel_generator", () -> new BlockItem(DIESEL_GENERATOR_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> COAL_GENERATOR_ITEM = ITEMS.register("portable_coal_generator", () -> new BlockItem(COAL_GENERATOR_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> GUN_MOD_PORTABLE_ITEM = FlansMod.Workbench_Quick_Item(ITEMS, MODID, "portable_mod_kit");
+    public static final Supplier<Block> GUN_MOD_TABLE_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "gun_modification_table");
+    public static final Supplier<Block> DIESEL_GENERATOR_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "portable_diesel_generator");
+    public static final Supplier<Block> COAL_GENERATOR_BLOCK = FlansMod.Workbench_Block(BLOCKS, MODID, "portable_coal_generator");
+    public static final Supplier<Item> GUN_MOD_TABLE_ITEM = ITEMS.register("gun_modification_table", () -> new BlockItem(GUN_MOD_TABLE_BLOCK.get(), new Item.Properties()));
+    public static final Supplier<Item> DIESEL_GENERATOR_ITEM = ITEMS.register("portable_diesel_generator", () -> new BlockItem(DIESEL_GENERATOR_BLOCK.get(), new Item.Properties()));
+    public static final Supplier<Item> COAL_GENERATOR_ITEM = ITEMS.register("portable_coal_generator", () -> new BlockItem(COAL_GENERATOR_BLOCK.get(), new Item.Properties()));
+    public static final Supplier<Item> GUN_MOD_PORTABLE_ITEM = FlansMod.Workbench_Quick_Item(ITEMS, MODID, "portable_mod_kit");
 
     // Tile entities
-    public static final RegistryObject<BlockEntityType<WorkbenchBlockEntity>> DIESEL_GENERATOR_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "portable_diesel_generator");
-    public static final RegistryObject<BlockEntityType<WorkbenchBlockEntity>> COAL_GENERATOR_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "portable_coal_generator");
-    public static final RegistryObject<BlockEntityType<WorkbenchBlockEntity>> GUN_MODIFICATION_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "gun_modification_table");
+    public static final Supplier<BlockEntityType<WorkbenchBlockEntity>> DIESEL_GENERATOR_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "portable_diesel_generator");
+    public static final Supplier<BlockEntityType<WorkbenchBlockEntity>> COAL_GENERATOR_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "portable_coal_generator");
+    public static final Supplier<BlockEntityType<WorkbenchBlockEntity>> GUN_MODIFICATION_TILE_ENTITY = Workbench_TileEntityType(TILE_ENTITIES, MODID, "gun_modification_table");
 
     // Menus
-    public static final RegistryObject<MenuType<WorkbenchMenuGunCrafting>> WORKBENCH_MENU_GUN_CRAFTING = MENUS.register("workbench_gun_crafting", () -> IForgeMenuType.create(WorkbenchMenuGunCrafting::new));
-    public static final RegistryObject<MenuType<WorkbenchMenuPower>> WORKBENCH_MENU_POWER = MENUS.register("workbench_power", () -> IForgeMenuType.create(WorkbenchMenuPower::new));
-    public static final RegistryObject<MenuType<WorkbenchMenuMaterials>> WORKBENCH_MENU_MATERIALS = MENUS.register("workbench_materials", () -> IForgeMenuType.create(WorkbenchMenuMaterials::new));
-    public static final RegistryObject<MenuType<WorkbenchMenuModification>> WORKBENCH_MENU_MODIFICATION  = MENUS.register("workbench_modification", () -> IForgeMenuType.create(WorkbenchMenuModification::new));
-    public static final RegistryObject<MenuType<WorkbenchMenuPartCrafting>> WORKBENCH_MENU_PART_CRAFTING = MENUS.register("workbench_part_crafting", () -> IForgeMenuType.create(WorkbenchMenuPartCrafting::new));
+    public static final Supplier<MenuType<WorkbenchMenuGunCrafting>> WORKBENCH_MENU_GUN_CRAFTING = MENUS.register("workbench_gun_crafting", () -> IMenuTypeExtension.create(WorkbenchMenuGunCrafting::new));
+    public static final Supplier<MenuType<WorkbenchMenuPower>> WORKBENCH_MENU_POWER = MENUS.register("workbench_power", () -> IMenuTypeExtension.create(WorkbenchMenuPower::new));
+    public static final Supplier<MenuType<WorkbenchMenuMaterials>> WORKBENCH_MENU_MATERIALS = MENUS.register("workbench_materials", () -> IMenuTypeExtension.create(WorkbenchMenuMaterials::new));
+    public static final Supplier<MenuType<WorkbenchMenuModification>> WORKBENCH_MENU_MODIFICATION  = MENUS.register("workbench_modification", () -> IMenuTypeExtension.create(WorkbenchMenuModification::new));
+    public static final Supplier<MenuType<WorkbenchMenuPartCrafting>> WORKBENCH_MENU_PART_CRAFTING = MENUS.register("workbench_part_crafting", () -> IMenuTypeExtension.create(WorkbenchMenuPartCrafting::new));
 
     // Recipes
-    public static final RegistryObject<RecipeType<PartFabricationRecipe>> PART_FABRICATION_RECIPE_TYPE = RECIPE_TYPES.register("part_fabrication", () -> RecipeType.simple(new ResourceLocation(MODID, "part_fabrication")));
-    public static final RegistryObject<RecipeSerializer<PartFabricationRecipe>> PART_FABRICATION_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("part_fabrication", PartFabricationRecipe.Serializer::new);
-    public static final RegistryObject<RecipeType<GunFabricationRecipe>> GUN_FABRICATION_RECIPE_TYPE = RECIPE_TYPES.register("gun_fabrication", () -> RecipeType.simple(new ResourceLocation(MODID, "gun_fabrication")));
-    public static final RegistryObject<RecipeSerializer<GunFabricationRecipe>> GUN_FABRICATION_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("gun_fabrication", GunFabricationRecipe.Serializer::new);
+    public static final Supplier<RecipeType<PartFabricationRecipe>> PART_FABRICATION_RECIPE_TYPE = RECIPE_TYPES.register("part_fabrication", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "part_fabrication")));
+    public static final Supplier<RecipeSerializer<PartFabricationRecipe>> PART_FABRICATION_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("part_fabrication", PartFabricationRecipe.Serializer::new);
+    public static final Supplier<RecipeType<GunFabricationRecipe>> GUN_FABRICATION_RECIPE_TYPE = RECIPE_TYPES.register("gun_fabrication", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "gun_fabrication")));
+    public static final Supplier<RecipeSerializer<GunFabricationRecipe>> GUN_FABRICATION_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("gun_fabrication", GunFabricationRecipe.Serializer::new);
 
     // Attributes
-    public static final RegistryObject<RangedAttribute> IMPACT_DAMAGE_MULTIPLIER = ATTRIBUTES.register("impact_damage_multiplier", () -> new RangedAttribute("impact_damage_multiplier", 1d, 0d, 2048d));
-    public static final RegistryObject<RangedAttribute> SPLASH_RADIUS_MULTIPLIER = ATTRIBUTES.register("splash_radius_multiplier", () -> new RangedAttribute("splash_radius_multiplier", 1d, 0d, 2048d));
-    public static final RegistryObject<RangedAttribute> TIME_BETWEEN_SHOTS_MULTIPLIER = ATTRIBUTES.register("time_between_shots_multiplier", () -> new RangedAttribute("time_between_shots_multiplier", 1d, 0.1d, 2048d));
-    public static final RegistryObject<RangedAttribute> SHOT_SPREAD_MULTIPLIER = ATTRIBUTES.register("shot_spread_multiplier", () -> new RangedAttribute("shot_spread_multiplier", 1d, 0d, 2048d));
-    public static final RegistryObject<RangedAttribute> VERTICAL_RECOIL_MULTIPLIER = ATTRIBUTES.register("vertical_recoil_multiplier", () -> new RangedAttribute("vertical_recoil_multiplier", 1d, 0d, 2048d));
-    public static final RegistryObject<RangedAttribute> HORIZONTAL_RECOIL_MULTIPLIER = ATTRIBUTES.register("horizontal_recoil_multiplier", () -> new RangedAttribute("horizontal_recoil_multiplier", 1d, 0d, 2048d));
+    public static final Supplier<RangedAttribute> IMPACT_DAMAGE_MULTIPLIER = ATTRIBUTES.register("impact_damage_multiplier", () -> new RangedAttribute("impact_damage_multiplier", 1d, 0d, 2048d));
+    public static final Supplier<RangedAttribute> SPLASH_RADIUS_MULTIPLIER = ATTRIBUTES.register("splash_radius_multiplier", () -> new RangedAttribute("splash_radius_multiplier", 1d, 0d, 2048d));
+    public static final Supplier<RangedAttribute> TIME_BETWEEN_SHOTS_MULTIPLIER = ATTRIBUTES.register("time_between_shots_multiplier", () -> new RangedAttribute("time_between_shots_multiplier", 1d, 0.1d, 2048d));
+    public static final Supplier<RangedAttribute> SHOT_SPREAD_MULTIPLIER = ATTRIBUTES.register("shot_spread_multiplier", () -> new RangedAttribute("shot_spread_multiplier", 1d, 0d, 2048d));
+    public static final Supplier<RangedAttribute> VERTICAL_RECOIL_MULTIPLIER = ATTRIBUTES.register("vertical_recoil_multiplier", () -> new RangedAttribute("vertical_recoil_multiplier", 1d, 0d, 2048d));
+    public static final Supplier<RangedAttribute> HORIZONTAL_RECOIL_MULTIPLIER = ATTRIBUTES.register("horizontal_recoil_multiplier", () -> new RangedAttribute("horizontal_recoil_multiplier", 1d, 0d, 2048d));
 
 
     // Loot Modifiers
-    public static final RegistryObject<Codec<LootPopulator>> LOOT_POPULATOR =               LOOT_MODIFIERS.register("loot_populator", LootPopulator.CODEC);
+    public static final Supplier<Codec<LootPopulator>> LOOT_POPULATOR = LOOT_MODIFIERS.register("loot_populator", LootPopulator.CODEC);
 
     // Damage Types
-    public static final ResourceKey<DamageType> DAMAGE_TYPE_GUN = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(MODID, "gun"));
+    public static final ResourceKey<DamageType> DAMAGE_TYPE_GUN = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "gun"));
 
     // Creative Tabs
     public static final Component CREATIVE_TAB_NAME_GUNS = Component.translatable("item_group." + MODID + ".creative_tab_guns");
-    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB_GUNS = CREATIVE_TABS.register("creative_tab_guns",
+    public static final Supplier<CreativeModeTab> CREATIVE_TAB_GUNS = CREATIVE_TABS.register("creative_tab_guns",
         () -> {
             List<ItemStack> stacks = new ArrayList<>();
-            for(Item item : ForgeRegistries.ITEMS.getValues())
+            for(Item item : BuiltInRegistries.ITEM)
             {
                 if(item instanceof GunItem)
                     stacks.add(new ItemStack(item));
@@ -218,10 +219,10 @@ public class FlansMod
                 .build();
         });
     public static final Component CREATIVE_TAB_NAME_BULLETS = Component.translatable("item_group." + MODID + ".creative_tab_bullets");
-    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB_BULLETS = CREATIVE_TABS.register("creative_tab_bullets",
+    public static final Supplier<CreativeModeTab> CREATIVE_TAB_BULLETS = CREATIVE_TABS.register("creative_tab_bullets",
         () -> {
             List<ItemStack> stacks = new ArrayList<>();
-            for(Item item : ForgeRegistries.ITEMS.getValues())
+            for(Item item : BuiltInRegistries.ITEM)
             {
                 if(item instanceof BulletItem || item instanceof GrenadeItem)
                     stacks.add(new ItemStack(item));
@@ -238,10 +239,10 @@ public class FlansMod
                 .build();
         });
     public static final Component CREATIVE_TAB_NAME_PARTS = Component.translatable("item_group." + MODID + ".creative_tab_parts");
-    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB_PARTS = CREATIVE_TABS.register("creative_tab_parts",
+    public static final Supplier<CreativeModeTab> CREATIVE_TAB_PARTS = CREATIVE_TABS.register("creative_tab_parts",
         () -> {
             List<ItemStack> stacks = new ArrayList<>();
-            for(Item item : ForgeRegistries.ITEMS.getValues())
+            for(Item item : BuiltInRegistries.ITEM)
             {
                 if(item instanceof PartItem)
                     stacks.add(new ItemStack(item));
@@ -258,10 +259,10 @@ public class FlansMod
                 .build();
         });
     public static final Component CREATIVE_TAB_NAME_MODIFIERS = Component.translatable("item_group." + MODID + ".creative_tab_modifiers");
-    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB_MODIFIERS = CREATIVE_TABS.register("creative_tab_modifiers",
+    public static final Supplier<CreativeModeTab> CREATIVE_TAB_MODIFIERS = CREATIVE_TABS.register("creative_tab_modifiers",
         () -> {
             List<ItemStack> stacks = new ArrayList<>();
-            for(Item item : ForgeRegistries.ITEMS.getValues())
+            for(Item item : BuiltInRegistries.ITEM)
             {
                 if(item instanceof AttachmentItem)
                     stacks.add(new ItemStack(item));
@@ -303,64 +304,64 @@ public class FlansMod
     public static final ContextCache CONTEXT_CACHE = new ServerContextCache();
     public static final ServerInventoryManager INVENTORY_MANAGER = new ServerInventoryManager();
 
-    public static RegistryObject<Item> Gun(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Gun(DeferredRegister<Item> itemRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new GunItem(loc, new Item.Properties().stacksTo(1)));
     }
 
-    public static RegistryObject<Item> Tool(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Tool(DeferredRegister<Item> itemRegister, String modID, String name)
     {
         // TODO: Check that this actually works correctly
         return Gun(itemRegister, modID, name);
     }
 
 
-    public static RegistryObject<Item> Bullet(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Bullet(DeferredRegister<Item> itemRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new BulletItem(loc, new Item.Properties()));
     }
 
-    public static RegistryObject<Item> Attachment(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Attachment(DeferredRegister<Item> itemRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new AttachmentItem(loc, new Item.Properties()));
     }
 
-    public static RegistryObject<Item> Part(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Part(DeferredRegister<Item> itemRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new PartItem(loc, new Item.Properties()));
     }
 
-    public static RegistryObject<Block> Workbench_Block(DeferredRegister<Block> blockRegister, String modID, String name)
+    public static Supplier<Block> Workbench_Block(DeferredRegister<Block> blockRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
-        return blockRegister.register(name, () -> new WorkbenchBlock(loc, BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).dynamicShape()));
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
+        return blockRegister.register(name, () -> new WorkbenchBlock(loc, BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).dynamicShape()));
     }
 
-    public static RegistryObject<Item> Workbench_Item(DeferredRegister<Item> itemRegister, String modID, String name, RegistryObject<Block> block)
+    public static Supplier<Item> Workbench_Item(DeferredRegister<Item> itemRegister, String modID, String name, Supplier<Block> block)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
     @Nonnull
-    public static RegistryObject<Item> Workbench_Quick_Item(@Nonnull DeferredRegister<Item> itemRegister, @Nonnull String modID, @Nonnull String name)
+    public static Supplier<Item> Workbench_Quick_Item(@Nonnull DeferredRegister<Item> itemRegister, @Nonnull String modID, @Nonnull String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new TemporaryWorkbenchItem(loc));
     }
 
-    public static RegistryObject<BlockEntityType<WorkbenchBlockEntity>> Workbench_TileEntityType(DeferredRegister<BlockEntityType<?>> tileEntityTypeRegister, String modID, String name)
+    public static Supplier<BlockEntityType<WorkbenchBlockEntity>> Workbench_TileEntityType(DeferredRegister<BlockEntityType<?>> tileEntityTypeRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return tileEntityTypeRegister.register(name, () -> new WorkbenchBlockEntity.WorkbenchBlockEntityTypeHolder(loc).CreateType());
     }
 
-    public static RegistryObject<Item> Vehicle_Item(DeferredRegister<Item> itemRegister, String modID, String name)
+    public static Supplier<Item> Vehicle_Item(DeferredRegister<Item> itemRegister, String modID, String name)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return itemRegister.register(name, () -> new VehicleItem(loc, new Item.Properties()));
     }
 
@@ -379,13 +380,13 @@ public class FlansMod
         }
     }
     @Nonnull
-    public static RegistryObject<EntityType<VehicleEntity>> Vehicle_Entity(
+    public static Supplier<EntityType<VehicleEntity>> Vehicle_Entity(
         @Nonnull DeferredRegister<EntityType<?>> entityRegister,
         @Nonnull String modID,
         @Nonnull String name,
         boolean longDistanceEnabled)
     {
-        ResourceLocation loc = new ResourceLocation(modID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(modID, name);
         return entityRegister.register(name, () ->
         {
             VehicleFactory factory = new VehicleFactory(loc);
@@ -412,9 +413,9 @@ public class FlansMod
 
     public FlansMod()
     {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FlansModConfig.GeneralConfig, "flans-general.toml");
+        ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FlansModConfig.GeneralConfig, "flans-general.toml");
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::CommonInit);
         ACTIONS_SERVER.HookServer(modEventBus);
@@ -456,14 +457,16 @@ public class FlansMod
             CONTEXT_CACHE.OnLevelUnloaded(ACTIONS_SERVER);
     }
     @SubscribeEvent
-    public void OnLevelTick(@Nonnull TickEvent.LevelTickEvent levelTick)
+    public void OnLevelTick(@Nonnull LevelTickEvent.Pre levelTick)
     {
-        OBBCollisionSystem physics = OBBCollisionSystem.ForLevel(levelTick.level);
-
-        if(levelTick.phase == TickEvent.Phase.START)
-            physics.PreTick();
-        if(levelTick.phase == TickEvent.Phase.END)
-            physics.PhysicsTick();
+        OBBCollisionSystem physics = OBBCollisionSystem.ForLevel(levelTick.getLevel());
+        physics.PreTick();
+    }
+    @SubscribeEvent
+    public void OnLevelTick(@Nonnull LevelTickEvent.Post levelTick)
+    {
+        OBBCollisionSystem physics = OBBCollisionSystem.ForLevel(levelTick.getLevel());
+        physics.PhysicsTick();
     }
 
     @SubscribeEvent
@@ -474,16 +477,16 @@ public class FlansMod
 
     private void OnRegsiterEvent(@Nonnull RegisterEvent event)
     {
-        if(event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS))
+        if(event.getRegistryKey().equals(NeoForgeRegistries.Keys.RECIPE_SERIALIZERS))
         {
             CraftingHelper.register(
-                new ResourceLocation(MODID, "tiered_material"),
+                ResourceLocation.fromNamespaceAndPath(MODID, "tiered_material"),
                 TieredMaterialIngredient.Serializer.INSTANCE);
             CraftingHelper.register(
-                new ResourceLocation(MODID, "stacked_vanilla"),
+                ResourceLocation.fromNamespaceAndPath(MODID, "stacked_vanilla"),
                 StackedVanillaIngredient.Serializer.INSTANCE);
             CraftingHelper.register(
-                new ResourceLocation(MODID, "tiered_part"),
+                ResourceLocation.fromNamespaceAndPath(MODID, "tiered_part"),
                 TieredPartIngredient.Serializer.INSTANCE);
         }
     }
@@ -536,7 +539,7 @@ public class FlansMod
                                             {
                                                 if (effectDef.effectType == EAbilityEffect.TotemOfUndying)
                                                 {
-                                                    if (net.minecraftforge.common.ForgeHooks.onLivingUseTotem(player, damageSource, attachmentStack, gunContextPlayer.GetHand()))
+                                                    if (CommonHooks.onLivingUseTotem(player, damageSource, attachmentStack, gunContextPlayer.GetHand()))
                                                     {
                                                         gunContext.SetAttachmentStack(attachmentType, i, ItemStack.EMPTY);
 

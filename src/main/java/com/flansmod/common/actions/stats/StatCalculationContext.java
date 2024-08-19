@@ -5,7 +5,7 @@ import com.flansmod.common.actions.Actions;
 import com.flansmod.common.actions.contexts.ActionGroupContext;
 import com.flansmod.common.actions.contexts.GunContext;
 import com.flansmod.common.actions.contexts.ShooterContext;
-import net.minecraftforge.common.util.Lazy;
+import cpw.mods.util.Lazy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

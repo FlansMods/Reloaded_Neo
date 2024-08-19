@@ -1,26 +1,23 @@
 package com.flansmod.client.input;
 
 import com.flansmod.client.FlansModClient;
-import com.flansmod.common.entity.vehicle.VehicleEntity;
 import com.flansmod.common.item.GunItem;
 import com.flansmod.common.types.vehicles.EVehicleAxis;
 import com.flansmod.common.types.elements.EPlayerInput;
 import com.flansmod.util.Maths;
 import com.flansmod.util.collision.ColliderHandle;
 import com.flansmod.util.collision.OBBCollisionSystem;
+import cpw.mods.util.Lazy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWGamepadState;
 
@@ -213,9 +210,9 @@ public class ClientInputHooks
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::OnKeyMappings);
 
-		MinecraftForge.EVENT_BUS.addListener(this::OnClickInput);
-		MinecraftForge.EVENT_BUS.addListener(this::OnClientTick);
-		MinecraftForge.EVENT_BUS.addListener(this::OnUseItemTick);
+		NeoForge.EVENT_BUS.addListener(this::OnClickInput);
+		NeoForge.EVENT_BUS.addListener(this::OnClientTick);
+		NeoForge.EVENT_BUS.addListener(this::OnUseItemTick);
 	}
 
 	public void OnKeyMappings(RegisterKeyMappingsEvent event)
@@ -271,81 +268,78 @@ public class ClientInputHooks
 			FlansModClient.ACTIONS_CLIENT.ClientKeyReleased(player, input, holdable.TicksSinceToggled());
 	}
 
-	public void OnClientTick(TickEvent.ClientTickEvent event)
+	public void OnClientTick(ClientTickEvent.Post event)
 	{
-		if(event.phase == TickEvent.Phase.END)
+		// Gather Minecraft inputs
+		Options options = Minecraft.getInstance().options;
+		Use.Tick(options.keyUse.isDown());
+		Attack.Tick(options.keyAttack.isDown());
+		MoveForward.Tick(options.keyUp.isDown());
+		MoveBack.Tick(options.keyDown.isDown());
+		MoveLeft.Tick(options.keyLeft.isDown());
+		MoveRight.Tick(options.keyRight.isDown());
+		Jump.Tick(options.keyJump.isDown());
+		Sneak.Tick(options.keyShift.isDown()); // Not sure we need this because it will be "exit vehicle"
+		Sprint.Tick(options.keySprint.isDown());
+
+		// And our own inputs
+		YawLeft.Tick(KeyMappings.YAW_LEFT_MAPPING.get().isDown());
+		YawRight.Tick(KeyMappings.YAW_RIGHT_MAPPING.get().isDown());
+		PitchUp.Tick(KeyMappings.PITCH_UP_MAPPING.get().isDown());
+		PitchDown.Tick(KeyMappings.PITCH_DOWN_MAPPING.get().isDown());
+		RollLeft.Tick(KeyMappings.ROLL_LEFT_MAPPING.get().isDown());
+		RollRight.Tick(KeyMappings.ROLL_RIGHT_MAPPING.get().isDown());
+		LookAt.Tick(KeyMappings.LOOK_AT_MAPPING.get().isDown());
+		ModeToggle.Tick(KeyMappings.MODE_TOGGLE_MAPPING.get().isDown());
+		ManualReload.Tick(KeyMappings.MANUAL_RELOAD_MAPPING.get().isDown());
+		MoveUp.Tick(KeyMappings.STRAFE_UP_MAPPING.get().isDown());
+		MoveDown.Tick(KeyMappings.STRAFE_DOWN_MAPPING.get().isDown());
+		GearUp.Tick(KeyMappings.GEAR_UP_MAPPING.get().isDown());
+		GearDown.Tick(KeyMappings.GEAR_DOWN_MAPPING.get().isDown());
+
+		MouseYaw.Tick(KeyMappings.YAW_MOUSE_AXIS.get());
+		MousePitch.Tick(KeyMappings.PITCH_MOUSE_AXIS.get());
+		MouseRoll.Tick(KeyMappings.ROLL_MOUSE_AXIS.get());
+		GamepadYaw.Tick(KeyMappings.YAW_GAMEPAD_AXIS.get());
+		GamepadPitch.Tick(KeyMappings.PITCH_GAMEPAD_AXIS.get());
+		GamepadRoll.Tick(KeyMappings.ROLL_GAMEPAD_AXIS.get());
+		GamepadForward.Tick(KeyMappings.FORWARD_GAMEPAD_AXIS.get());
+		GamepadRight.Tick(KeyMappings.STRAFE_RIGHT_GAMEPAD_AXIS.get());
+		GamepadUp.Tick(KeyMappings.STRAFE_UP_GAMEPAD_AXIS.get());
+
+		Player player = Minecraft.getInstance().player;
+		if(player != null)
 		{
-			// Gather Minecraft inputs
-			Options options = Minecraft.getInstance().options;
-			Use.Tick(options.keyUse.isDown());
-			Attack.Tick(options.keyAttack.isDown());
-			MoveForward.Tick(options.keyUp.isDown());
-			MoveBack.Tick(options.keyDown.isDown());
-			MoveLeft.Tick(options.keyLeft.isDown());
-			MoveRight.Tick(options.keyRight.isDown());
-			Jump.Tick(options.keyJump.isDown());
-			Sneak.Tick(options.keyShift.isDown()); // Not sure we need this because it will be "exit vehicle"
-			Sprint.Tick(options.keySprint.isDown());
+			ProcessPress(player, LookAt, EPlayerInput.SpecialKey1);
+			ProcessPress(player, ModeToggle, EPlayerInput.SpecialKey2);
+			ProcessPress(player, ManualReload, EPlayerInput.Reload1);
+			ProcessPress(player, Jump, EPlayerInput.Jump);
+			ProcessPress(player, Sprint, EPlayerInput.Sprint);
+			ProcessPress(player, GearUp, EPlayerInput.GearUp);
+			ProcessPress(player, GearDown, EPlayerInput.GearDown);
 
-			// And our own inputs
-			YawLeft.Tick(KeyMappings.YAW_LEFT_MAPPING.get().isDown());
-			YawRight.Tick(KeyMappings.YAW_RIGHT_MAPPING.get().isDown());
-			PitchUp.Tick(KeyMappings.PITCH_UP_MAPPING.get().isDown());
-			PitchDown.Tick(KeyMappings.PITCH_DOWN_MAPPING.get().isDown());
-			RollLeft.Tick(KeyMappings.ROLL_LEFT_MAPPING.get().isDown());
-			RollRight.Tick(KeyMappings.ROLL_RIGHT_MAPPING.get().isDown());
-			LookAt.Tick(KeyMappings.LOOK_AT_MAPPING.get().isDown());
-			ModeToggle.Tick(KeyMappings.MODE_TOGGLE_MAPPING.get().isDown());
-			ManualReload.Tick(KeyMappings.MANUAL_RELOAD_MAPPING.get().isDown());
-			MoveUp.Tick(KeyMappings.STRAFE_UP_MAPPING.get().isDown());
-			MoveDown.Tick(KeyMappings.STRAFE_DOWN_MAPPING.get().isDown());
-			GearUp.Tick(KeyMappings.GEAR_UP_MAPPING.get().isDown());
-			GearDown.Tick(KeyMappings.GEAR_DOWN_MAPPING.get().isDown());
+			ProcessPressHoldRelease(player, Attack, EPlayerInput.Fire1);
+			ProcessPressHoldRelease(player, Use, EPlayerInput.Fire2);
 
-			MouseYaw.Tick(KeyMappings.YAW_MOUSE_AXIS.get());
-			MousePitch.Tick(KeyMappings.PITCH_MOUSE_AXIS.get());
-			MouseRoll.Tick(KeyMappings.ROLL_MOUSE_AXIS.get());
-			GamepadYaw.Tick(KeyMappings.YAW_GAMEPAD_AXIS.get());
-			GamepadPitch.Tick(KeyMappings.PITCH_GAMEPAD_AXIS.get());
-			GamepadRoll.Tick(KeyMappings.ROLL_GAMEPAD_AXIS.get());
-			GamepadForward.Tick(KeyMappings.FORWARD_GAMEPAD_AXIS.get());
-			GamepadRight.Tick(KeyMappings.STRAFE_RIGHT_GAMEPAD_AXIS.get());
-			GamepadUp.Tick(KeyMappings.STRAFE_UP_GAMEPAD_AXIS.get());
+		}
 
-			Player player = Minecraft.getInstance().player;
-			if(player != null)
+		while(KeyMappings.DEBUG_PAUSE_PHYSICS.get().consumeClick())
+		{
+			OBBCollisionSystem.PAUSE_PHYSICS = !OBBCollisionSystem.PAUSE_PHYSICS;
+			if(OBBCollisionSystem.PAUSE_PHYSICS)
+				Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_pause.on"), false);
+			else
+				Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_pause.off"), false);
+		}
+		while(KeyMappings.DEBUG_CYCLE_PHYSICS_INSPECT.get().consumeClick())
+		{
+			if(Minecraft.getInstance().level != null)
 			{
-				ProcessPress(player, LookAt, EPlayerInput.SpecialKey1);
-				ProcessPress(player, ModeToggle, EPlayerInput.SpecialKey2);
-				ProcessPress(player, ManualReload, EPlayerInput.Reload1);
-				ProcessPress(player, Jump, EPlayerInput.Jump);
-				ProcessPress(player, Sprint, EPlayerInput.Sprint);
-				ProcessPress(player, GearUp, EPlayerInput.GearUp);
-				ProcessPress(player, GearDown, EPlayerInput.GearDown);
-
-				ProcessPressHoldRelease(player, Attack, EPlayerInput.Fire1);
-				ProcessPressHoldRelease(player, Use, EPlayerInput.Fire2);
-
-			}
-
-			while(KeyMappings.DEBUG_PAUSE_PHYSICS.get().consumeClick())
-			{
-				OBBCollisionSystem.PAUSE_PHYSICS = !OBBCollisionSystem.PAUSE_PHYSICS;
-				if(OBBCollisionSystem.PAUSE_PHYSICS)
-					Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_pause.on"), false);
+				ColliderHandle handle = OBBCollisionSystem.CycleDebugHandle(Minecraft.getInstance().level);
+				if(handle.Handle() == 0L)
+					Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_handle_inspect.off"), false);
 				else
-					Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_pause.off"), false);
-			}
-			while(KeyMappings.DEBUG_CYCLE_PHYSICS_INSPECT.get().consumeClick())
-			{
-				if(Minecraft.getInstance().level != null)
-				{
-					ColliderHandle handle = OBBCollisionSystem.CycleDebugHandle(Minecraft.getInstance().level);
-					if(handle.Handle() == 0L)
-						Minecraft.getInstance().getChatListener().handleSystemMessage(Component.translatable("flansmod.debug.physics_handle_inspect.off"), false);
-					else
-						Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(""+handle.Handle()), false);
-				}
+					Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(""+handle.Handle()), false);
 			}
 		}
 	}

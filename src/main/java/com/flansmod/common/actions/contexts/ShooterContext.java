@@ -8,6 +8,7 @@ import com.flansmod.common.types.Constants;
 import com.flansmod.util.MinecraftHelpers;
 import com.flansmod.util.Transform;
 import com.flansmod.util.formulae.FloatAccumulation;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -15,21 +16,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Supplier;
 
 public abstract class ShooterContext
 {
-	public static ResourceKey<Level> DimensionUnknown = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(FlansMod.MODID, "null"));
+	public static ResourceKey<Level> DimensionUnknown = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(FlansMod.MODID, "null"));
 	public static final UUID InvalidID = new UUID(0L, 0L);
 	public static final ShooterContext INVALID = new ShooterContext()
 	{
@@ -164,15 +166,15 @@ public abstract class ShooterContext
 	public Optional<String> GetStringOverride(@Nonnull String stat) { return ModCache.GetStringOverride(stat); }
 
 	// Attribute Modifiers for specific stats
-	private static final HashMap<String, RegistryObject<RangedAttribute>> StatToAttribute = new HashMap<>();
+	private static final HashMap<String, Holder<Attribute>> StatToAttribute = new HashMap<>();
 	static
 	{
-		StatToAttribute.put(Constants.STAT_IMPACT_DAMAGE, FlansMod.IMPACT_DAMAGE_MULTIPLIER);
-		StatToAttribute.put(Constants.STAT_SHOOT_SPLASH_RADIUS, FlansMod.SPLASH_RADIUS_MULTIPLIER);
-		StatToAttribute.put(Constants.STAT_GROUP_REPEAT_DELAY, FlansMod.TIME_BETWEEN_SHOTS_MULTIPLIER);
-		StatToAttribute.put(Constants.STAT_SHOT_SPREAD, FlansMod.SHOT_SPREAD_MULTIPLIER);
-		StatToAttribute.put(Constants.STAT_SHOT_VERTICAL_RECOIL, FlansMod.VERTICAL_RECOIL_MULTIPLIER);
-		StatToAttribute.put(Constants.STAT_SHOT_HORIZONTAL_RECOIL, FlansMod.HORIZONTAL_RECOIL_MULTIPLIER);
+		StatToAttribute.put(Constants.STAT_IMPACT_DAMAGE, Holder.direct(FlansMod.IMPACT_DAMAGE_MULTIPLIER.get()));
+		StatToAttribute.put(Constants.STAT_SHOOT_SPLASH_RADIUS, Holder.direct(FlansMod.SPLASH_RADIUS_MULTIPLIER.get()));
+		StatToAttribute.put(Constants.STAT_GROUP_REPEAT_DELAY, Holder.direct(FlansMod.TIME_BETWEEN_SHOTS_MULTIPLIER.get()));
+		StatToAttribute.put(Constants.STAT_SHOT_SPREAD, Holder.direct(FlansMod.SHOT_SPREAD_MULTIPLIER.get()));
+		StatToAttribute.put(Constants.STAT_SHOT_VERTICAL_RECOIL, Holder.direct(FlansMod.VERTICAL_RECOIL_MULTIPLIER.get()));
+		StatToAttribute.put(Constants.STAT_SHOT_HORIZONTAL_RECOIL, Holder.direct(FlansMod.HORIZONTAL_RECOIL_MULTIPLIER.get()));
 
 
 	}
@@ -183,10 +185,10 @@ public abstract class ShooterContext
 		// Apply Attribute modifiers, if they are present
 		if(Owner() instanceof LivingEntity living)
 		{
-			RegistryObject<RangedAttribute> attrib = StatToAttribute.get(stat);
+			Holder<Attribute> attrib = StatToAttribute.get(stat);
 			if(attrib != null)
 			{
-				AttributeInstance attribMulti = living.getAttribute(attrib.get());
+				AttributeInstance attribMulti = living.getAttribute(attrib);
 				if(attribMulti != null)
 				{
 					return FloatAccumulation.compose(
