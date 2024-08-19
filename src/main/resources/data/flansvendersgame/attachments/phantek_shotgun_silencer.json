@@ -1,0 +1,57 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:attach_to_shotgun",
+            "flansmod:barrel_attach",
+            "flansbasicparts:add_to_part_fab"
+        ]
+    },
+    "attachmentType": "Barrel",
+    "modifiers": [
+        {
+            "stat": "loudness",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "IndependentPercentage",
+                    "value": 25.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        },
+        {
+            "stat": "pitch",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "StackablePercentage",
+                    "value": 100.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        },
+        {
+            "stat": "impact_damage",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "IndependentPercentage",
+                    "value": 80.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        }
+    ],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

@@ -1,0 +1,14 @@
+{
+    "itemSettings": {
+        "maxStackSize": 64,
+        "tags": [
+            "flansmod:bullet",
+            "flansmod:artillery_shell"
+        ]
+    },
+    "roundsPerItem": 1,
+    "hitscans": [],
+    "projectiles": [],
+    "triggers": [],
+    "actionGroups": []
+}

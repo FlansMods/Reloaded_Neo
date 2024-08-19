@@ -1,0 +1,80 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:attach_to_rifle",
+            "flansmod:barrel_attach"
+        ]
+    },
+    "attachmentType": "Barrel",
+    "modifiers": [
+        {
+            "stat": "melee_damage",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "BaseAdd",
+                    "value": 4.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        }
+    ],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [
+        {
+            "inputType": "SpecialKey1",
+            "nodes": [
+                {
+                    "actionGroupToTrigger": "look",
+                    "modalCheck": "",
+                    "canTriggerWhileReloading": false,
+                    "deferToAttachment": false,
+                    "attachmentType": "Barrel",
+                    "attachmentIndex": 0,
+                    "andContinueEvaluating": false
+                }
+            ]
+        }
+    ],
+    "actionOverrides": [
+        {
+            "key": "look",
+            "canActUnderwater": true,
+            "canActUnderOtherLiquid": true,
+            "canBeOverriden": false,
+            "twoHanded": false,
+            "repeatMode": "SemiAuto",
+            "repeatDelay": 0.05,
+            "repeatCount": 0,
+            "spinUpDuration": 0.0,
+            "loudness": 0.0,
+            "autoCancelIfNotInMode": "",
+            "actions": [
+                {
+                    "actionType": "Melee",
+                    "duration": 1.0,
+                    "sounds": [],
+                    "itemStack": "",
+                    "scopeOverlay": "",
+                    "anim": ""
+                },
+                {
+                    "actionType": "Animation",
+                    "duration": 1.0,
+                    "sounds": [],
+                    "itemStack": "",
+                    "scopeOverlay": "",
+                    "anim": "melee"
+                }
+            ],
+            "modifiers": []
+        }
+    ],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

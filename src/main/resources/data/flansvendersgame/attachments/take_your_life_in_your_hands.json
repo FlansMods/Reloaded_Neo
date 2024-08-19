@@ -1,0 +1,24 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:grip",
+            "flansmod:attach_to_any"
+        ]
+    },
+    "attachmentType": "Grip",
+    "modifiers": [],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [
+        {
+            "trait": ":",
+            "level": 1
+        }
+    ],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

@@ -1,0 +1,29 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": []
+    },
+    "attachmentType": "Grip",
+    "modifiers": [
+        {
+            "stat": "flashlight_strength",
+            "matchGroupPaths": [],
+            "accumulators": [],
+            "setValue": ""
+        },
+        {
+            "stat": "flashlight_range",
+            "matchGroupPaths": [],
+            "accumulators": [],
+            "setValue": ""
+        }
+    ],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

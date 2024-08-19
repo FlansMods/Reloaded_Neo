@@ -1,0 +1,27 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:attach_to_rifle",
+            "flansmod:attach_to_shotgun",
+            "flansmod:barrel_attach"
+        ]
+    },
+    "attachmentType": "Barrel",
+    "modifiers": [
+        {
+            "stat": "set_fire_to_target",
+            "matchGroupPaths": [],
+            "accumulators": [],
+            "setValue": ""
+        }
+    ],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

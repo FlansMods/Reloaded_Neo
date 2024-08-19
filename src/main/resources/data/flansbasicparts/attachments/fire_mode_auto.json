@@ -1,0 +1,19 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:attach_to_any",
+            "flansmod:generic"
+        ]
+    },
+    "attachmentType": "Generic",
+    "modifiers": [],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": true
+}

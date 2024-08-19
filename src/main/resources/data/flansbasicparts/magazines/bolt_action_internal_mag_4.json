@@ -1,0 +1,16 @@
+{
+    "tags": [
+        "generic_bolt_action"
+    ],
+    "modifiers": [],
+    "ammoLoadMode": "OneBulletAtATime",
+    "ammoConsumeMode": "FirstNonEmpty",
+    "upgradeCost": 0,
+    "numRounds": 4,
+    "allRoundsMustBeIdentical": false,
+    "matchingBullets": {
+        "itemIDFilters": [],
+        "itemTagFilters": [],
+        "materialFilters": []
+    }
+}

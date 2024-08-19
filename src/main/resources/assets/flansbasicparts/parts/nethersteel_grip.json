@@ -1,0 +1,36 @@
+{
+    "canPlaceInMachiningTable": false,
+    "canPlaceInModificationTable": false,
+    "compatiblityTags": [
+        "mecha",
+        "groundVehicle",
+        "plane"
+    ],
+    "itemSettings": {
+        "maxStackSize": 64,
+        "tags": [
+            "flansmod:part",
+            "flansmod:grip"
+        ]
+    },
+    "modifiers": [],
+    "traits": [
+        {
+            "trait": "flansbasicparts:traits/furious",
+            "level": 1
+        }
+    ],
+    "engine": {
+        "maxAcceleration": 1.0,
+        "maxDeceleration": 1.0,
+        "maxSpeed": 1.0,
+        "fuelType": "Smeltable",
+        "fuelConsumptionIdle": 0.0,
+        "fuelConsumptionFull": 1.0,
+        "solidFuelSlots": 1,
+        "liquidFuelCapacity": 0,
+        "batterySlots": 0,
+        "FECapacity": 0
+    },
+    "material": "flansbasicparts:nethersteel"
+}

@@ -1,0 +1,46 @@
+{
+    "itemSettings": {
+        "maxStackSize": 1,
+        "tags": [
+            "flansmod:attach_to_pistol",
+            "flansmod:attach_to_rifle",
+            "flansmod:barrel_attach",
+            "flansbasicparts:add_to_part_fab"
+        ]
+    },
+    "attachmentType": "Barrel",
+    "modifiers": [
+        {
+            "stat": "spread",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "IndependentPercentage",
+                    "value": 10.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        },
+        {
+            "stat": "impact_damage",
+            "matchGroupPaths": [],
+            "accumulators": [
+                {
+                    "operation": "StackablePercentage",
+                    "value": 20.0,
+                    "multiplyPer": []
+                }
+            ],
+            "setValue": ""
+        }
+    ],
+    "mechaEffects": [],
+    "mechaEffectFilter": "",
+    "handlerOverrides": [],
+    "actionOverrides": [],
+    "reloadOverrides": [],
+    "abilities": [],
+    "modeOverride": "FullAuto",
+    "overrideFireMode": false
+}

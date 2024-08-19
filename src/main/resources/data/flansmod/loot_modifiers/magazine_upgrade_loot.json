@@ -1,0 +1,38 @@
+{
+  "type": "flansmod:loot_populator",
+  "conditions": [
+	{
+		"condition": "minecraft:alternative",
+		"terms": 
+		[
+			{
+				"condition": "forge:loot_table_id",
+				"loot_table_id": "minecraft:chests/buried_treasure"
+			},
+			{
+				"condition": "forge:loot_table_id",
+				"loot_table_id": "minecraft:chests/igloo_chest"
+			},
+			{
+				"condition": "forge:loot_table_id",
+				"loot_table_id": "minecraft:chests/woodland_mansion"
+			},
+			{
+				"condition": "forge:loot_table_id",
+				"loot_table_id": "minecraft:chests/desert_pyramid"
+			}
+		]
+	}
+  ],
+  "entries": [
+	{
+	  "chance":0.25,
+	  "min_stack_size":1,
+	  "max_stack_size":1,
+	  "item": {
+		"id": "flansmod:magazine_upgrade",
+		"Count": 1
+	  }
+	}
+  ]
+}
